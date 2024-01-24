@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Guessing Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #chat-box {
+            width: 300px;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            margin: 20px auto;
+            padding: 10px;
+        }
+        #input-box {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-box"></div>
+<div id="input-box">
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+
+    function sendMessage() {
+        const userMessage = userInput.value.trim();
+        if (userMessage !== '') {
+            appendMessage('You: ' + userMessage);
+            userInput.value = '';
+
+            // Simulate AI response (replace this with your AI logic)
+            const aiResponse = simulateAIResponse(userMessage);
+            appendMessage('AI: ' + aiResponse);
+        }
+    }
+
+    function appendMessage(message) {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = message;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function simulateAIResponse(userMessage) {
+        // Replace this with your AI logic
+        const isHuman = Math.random() < 0.5; // 50% chance of being human
+        if (isHuman) {
+            return 'I am a human.';
+        } else {
+            return 'I am an AI.';
+        }
+    }
+</script>
+
+</body>
+</html>
