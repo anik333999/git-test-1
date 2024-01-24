@@ -20,47 +20,79 @@
         #input-box {
             margin-top: 10px;
         }
+        #score {
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <div id="chat-box"></div>
+<div id="score">Score: 0</div>
 <div id="input-box">
     <input type="text" id="user-input" placeholder="Type your message...">
     <button onclick="sendMessage()">Send</button>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
+    const chatBox = $('#chat-box');
+    const userInput = $('#user-input');
+    let score = 0;
 
     function sendMessage() {
-        const userMessage = userInput.value.trim();
+        const userMessage = userInput.val().trim();
         if (userMessage !== '') {
             appendMessage('You: ' + userMessage);
-            userInput.value = '';
+            userInput.val('');
 
-            // Simulate AI response (replace this with your AI logic)
-            const aiResponse = simulateAIResponse(userMessage);
-            appendMessage('AI: ' + aiResponse);
+            // Fetch AI response from GPT-3
+            fetchAIResponse(userMessage);
         }
     }
 
     function appendMessage(message) {
-        const messageElement = document.createElement('p');
-        messageElement.textContent = message;
-        chatBox.appendChild(messageElement);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        const messageElement = $('<p>').text(message);
+        chatBox.append(messageElement);
+        chatBox.scrollTop(chatBox.prop('scrollHeight'));
     }
 
-    function simulateAIResponse(userMessage) {
-        // Replace this with your AI logic
-        const isHuman = Math.random() < 0.5; // 50% chance of being human
-        if (isHuman) {
-            return 'I am a human.';
-        } else {
-            return 'I am an AI.';
-        }
+    function updateScore(isCorrect) {
+        score += isCorrect ? 1 : 0;
+        $('#score').text('Score: ' + score);
+    }
+
+    function fetchAIResponse(userMessage) {
+        const apiKey = 'f65EvT3VhzduJZvAp37Dlpmi'; // Replace with your GPT-3 API key
+        const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
+
+        const requestData = {
+            prompt: userMessage,
+            max_tokens: 50
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: apiUrl,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+            data: JSON.stringify(requestData),
+            success: function (response) {
+                const aiResponse = response.choices[0].text.trim();
+                appendMessage('AI: ' + aiResponse);
+
+                // Simulate correctness (replace with your logic)
+                const isCorrect = aiResponse.toLowerCase().includes('human');
+                updateScore(isCorrect);
+            },
+            error: function (error) {
+                console.error('Error fetching AI response:', error);
+                appendMessage('AI: I am having trouble understanding. Please try again.');
+            }
+        });
     }
 </script>
 
